@@ -1,0 +1,10 @@
+@use './colors.scss';
+
+// flexbox
+@mixin flexbox($justifyContent: center, $alignItems: start, $flexDirection: row, $gap: 0) {
+  display: flex;
+  flex-direction: $flexDirection;
+  justify-content: $justifyContent;
+  align-items: $alignItems;
+  gap: $gap;
+}
