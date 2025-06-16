@@ -1,0 +1,13 @@
+@use "../../../styles/colors.scss";
+
+.card {
+	padding: 1rem;
+	border: 1px solid colors.$medium-grey;
+	border-radius: 5px;
+}
+
+@media (max-width: 600px) {
+	.card {
+		width: 100%;
+	}
+}
