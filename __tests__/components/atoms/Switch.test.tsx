@@ -5,7 +5,7 @@ import '@testing-library/jest-dom'
 import { vi } from 'vitest';
 
 describe('Switch component test', () => {
-	it('renders labels and dynamic aria-label based on checked state', async () => {
+	test('renders labels and dynamic aria-label based on checked state', async () => {
 		const user = userEvent.setup()
 		const mockOnChange = vi.fn()
 
