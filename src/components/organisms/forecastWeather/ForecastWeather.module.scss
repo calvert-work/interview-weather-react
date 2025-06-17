@@ -1,0 +1,25 @@
+@use "../../../styles/mixin.scss";
+
+.forecastContainer {
+	@include mixin.flexbox($flexDirection: column, $justifyContent: start);
+	min-height: 15rem;
+
+	&__contentContainer {
+		@include mixin.flexbox($flexDirection: row, $justifyContent: space-evenly, $gap: 1rem);
+		flex-wrap: wrap;
+		width: 100%;
+	}
+
+	&__noData {
+		align-self: center;
+	}
+}
+
+@media (max-width: 600px) {
+	.forecastContainer {
+		&__noDataContainer {
+			@include mixin.flexbox($flexDirection: column, $gap: 10px);
+			width: 100%;
+		}
+	}
+}

@@ -1,0 +1,60 @@
+@use "../../../styles/mixin.scss";
+@use "../../../styles/colors.scss";
+
+.searchBarContainer {
+	@include mixin.flexbox($flexDirection: column);
+	min-width: 60%;
+
+	&__searchBar {
+		@include mixin.flexbox($alignItems: end, $gap: 10px);
+		flex: 1;
+		width: 100%;
+	}
+
+	&__listContainer {
+		position: relative;
+		width: 100%;
+
+		&__listUl {
+			position: absolute;
+			top: 100%;
+			left: 0;
+			width: 100%;
+			z-index: 10;
+			background: white;
+			border: 1px solid colors.$medium-grey;
+			margin: 0;
+			padding: 0;
+			list-style: none;
+			text-align: left;
+		}
+
+		&__listLi {
+			padding: 8px;
+			cursor: pointer;
+			border-bottom: 1px solid colors.$medium-grey;
+
+			&:hover {
+				background-color: colors.$navy-blue;
+				color: white;
+			}
+		}
+	}
+}
+
+@media (max-width: 600px) {
+	.searchBarContainer {
+		width: 100%;
+		margin-top: 1rem;
+		
+		&__searchBar {
+			@include mixin.flexbox($flexDirection: column, $alignItems: end, $gap: 10px);
+			width: 100%;
+
+			&>button {
+				width: 100%;
+			}
+		}
+
+	}
+}

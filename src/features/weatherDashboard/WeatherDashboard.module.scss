@@ -1,0 +1,11 @@
+@use "../../styles/mixin.scss";
+
+.favoriteAndHistoryContainer {
+	@include mixin.flexbox($justifyContent: center, $gap: 10px);
+}
+
+@media (max-width: 600px) {
+	.favoriteAndHistoryContainer {
+		@include mixin.flexbox($justifyContent: center,$flexDirection: column, $gap: 10px);
+	}
+}
