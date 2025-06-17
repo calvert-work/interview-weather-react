@@ -1,4 +1,4 @@
-import { capitalize } from "../../src/util/capitalize";
+import { capitalize } from "../../src/utils/capitalize";
 
 describe("capitalize unit test", async () => {
 	test("text1 is capitalized correctly", async () => {

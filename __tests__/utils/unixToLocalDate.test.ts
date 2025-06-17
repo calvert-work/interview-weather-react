@@ -1,4 +1,4 @@
-import { unixToLocalDate } from "../../src/util/unixToLocalDate"
+import { unixToLocalDate } from "../../src/utils/unixToLocalDate"
 
 describe("unix to local date unit test", () => {
 	test("returns correct format", () => {
