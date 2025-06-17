@@ -1,0 +1,7 @@
+@use "../../../styles/mixin.scss";
+
+.label {
+	@include mixin.flexbox($justifyContent: start, $flexDirection: column); 
+	width: 100%;
+	cursor: pointer;
+}
