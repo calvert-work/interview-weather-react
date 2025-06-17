@@ -1,0 +1,19 @@
+@use "../../../styles/mixin.scss";
+
+.favoriteCitiesCard {
+	flex: 1;
+	height: 20rem;
+}
+
+.favoriteCitiesTitle {
+	@include mixin.flexbox($justifyContent: start);
+}
+
+.pills {
+	@include mixin.flexbox($justifyContent: start, $gap: 5px);
+	flex-wrap: wrap;
+
+	&>button {
+		cursor: auto;
+	}
+}
