@@ -25,7 +25,7 @@ describe('Switch component test', () => {
 		expect(screen.getByText('On')).toBeInTheDocument()
 
 		const switchAria1 = document.getElementsByTagName("span")[2]
-		expect(switchAria1.ariaLabel).toBe('Selected Dark mode off')
+		expect(switchAria1.ariaDescription).toBe('Selected Dark mode off')
 
 		const switchInput = screen.getByRole("checkbox");
 		await user.click(switchInput)
@@ -44,6 +44,6 @@ describe('Switch component test', () => {
 		)
 		const switchAria2 = document.getElementsByTagName("span")[2]
 
-		expect(switchAria2.ariaLabel).toBe('Selected Dark mode on')
+		expect(switchAria2.ariaDescription).toBe('Selected Dark mode on')
 	})
 })
