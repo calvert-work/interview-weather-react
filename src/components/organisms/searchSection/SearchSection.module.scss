@@ -1,0 +1,19 @@
+@use "../../../styles/mixin.scss";
+
+.searchSection {
+	@include mixin.flexbox($justifyContent: space-between, $alignItems: end);
+}
+
+.temperatureUnit {
+	@include mixin.flexbox($flexDirection: row, $alignItems: center, $gap: 5px);
+}
+
+.hiddenSwitchLabel {
+	display: none;
+}
+
+@media (max-width: 600px) {
+	.searchSection {
+		@include mixin.flexbox($flexDirection: column, $alignItems: center, $gap: 5px);
+	}
+}
