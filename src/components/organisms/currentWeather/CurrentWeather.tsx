@@ -11,6 +11,8 @@ import { unixToLocalDate } from "../../../util/unixToLocalDate";
 import { axiosInstance } from "../../../network/axiosInstance";
 import type { AxiosError } from "axios";
 import { convertedTemp } from "../../../util/getTemperature";
+import { useContext } from "react";
+import { AppContext } from "../../../context/AppContext";
 
 export const CurrentWeather = (props: TCurrentWeather) => {
 	const {
@@ -19,6 +21,8 @@ export const CurrentWeather = (props: TCurrentWeather) => {
 		favoriteCities,
 		updateSavedFavoriteCities
 	} = props
+
+	const { setToastMsg } = useContext(AppContext);
 
 	const cityName = weatherData?.name ?? "N/A";
 	const cityNameLowerCased = weatherData?.name.toLowerCase() ?? "N/A";
@@ -51,7 +55,7 @@ export const CurrentWeather = (props: TCurrentWeather) => {
 					}
 				}
 			} else {
-				alert("Only logged in user can save favorite city")
+				setToastMsg({ message: "Only logged in user can save favorite city", type: "error" })
 			}
 		}
 	}

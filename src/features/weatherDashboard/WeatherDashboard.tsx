@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { Header } from "../../components/organisms/header/Header"
 import { SearchSection } from "../../components/organisms/searchSection/SearchSection"
 import { CurrentWeather } from "../../components/organisms/currentWeather/CurrentWeather"
@@ -14,6 +14,7 @@ import { SearchHistory } from "../../components/organisms/searchHistory/SearchHi
 import styles from "./WeatherDashboard.module.scss"
 import type { TFavoriteCityResponseObject } from "../../types/FavoriteCityResponseObject.types"
 import type { HistoryResponseObject } from "../../types/HistoryResponseObject.types"
+import { AppContext } from "../../context/AppContext"
 export const WeatherDashboard = () => {
 	const [isToggled, setIsToggled] = useState<boolean>(false)
 	const [searchedCity, setSearchedCity] = useState<{ city: string, source: "type" | "suggested" | "default" }>({ city: "", source: "default" })
@@ -24,6 +25,8 @@ export const WeatherDashboard = () => {
 	const [userEmail, setUserEmail] = useState<string>('')
 	const [savedFavoriteCities, setSavedFavoriteCities] = useState<TFavoriteCityResponseObject[]>([])
 	const [history, setHistory] = useState<string[]>([])
+
+	const { setToastMsg } = useContext(AppContext);
 
 	const debouncedCity = useDebounce(searchedCity, 1000);
 
@@ -52,19 +55,25 @@ export const WeatherDashboard = () => {
 					);
 					setSuggestedCities(cities);
 				} else {
+					setToastMsg({ message: "Invalid city or country", type: "info" })
 					setSuggestedCities([]);
 				}
 			} catch (error) {
 				if ((error as AxiosError).status === 404) {
-					alert("Invalid city")
+					setToastMsg({ message: "Invalid city or country", type: "info" })
 				}
 				setSuggestedCities([]);
 			}
+
+			setToastMsg(undefined)
 		};
 
 		if (debouncedCity.source === "type") {
+			setToastMsg({ message: "Server could be sleeping, give it one min to wake up", type: "info", duration: 120000 })
+
 			fetchSuggestions();
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [debouncedCity]);
 
 	const suggestedCityClick = (city: string) => {
@@ -92,10 +101,12 @@ export const WeatherDashboard = () => {
 				}
 			} catch (error) {
 				if ((error as AxiosError).status === 404) {
-					alert("Invalid city")
+					setToastMsg({ message: "Invalid city or country", type: "error" })
 				}
 				setSuggestedCities([]);
 			}
+		} else {
+			setToastMsg({ message: "Select an option from the search dropdown to proceed", type: "info" })
 		}
 	}
 
@@ -108,9 +119,10 @@ export const WeatherDashboard = () => {
 
 			if (registerResponse.status === 201) {
 				setUserEmail(email)
+				setToastMsg({ message: "Registration successful, go ahead and login", type: "success" })
 			}
 		} catch {
-			alert("Are you entering your details correctly? Try registering again")
+			setToastMsg({ message: "Are you entering your details correctly? Try registering again", type: "error" })
 		}
 	}
 
@@ -120,6 +132,7 @@ export const WeatherDashboard = () => {
 
 			if (registerResponse.status === 200) {
 				const userId = registerResponse.data.data.id
+				setToastMsg({ message: "Login success", type: "success" })
 
 				setUserEmail(email)
 				setIsLoggedIn(true)
@@ -129,7 +142,7 @@ export const WeatherDashboard = () => {
 				getHistory()
 			}
 		} catch {
-			alert("User does not exist, register yourself now")
+			setToastMsg({ message: "User does not exist, register yourself now", type: "error" })
 		}
 	}
 
@@ -168,14 +181,16 @@ export const WeatherDashboard = () => {
 
 			if (clearHistoryResponse.status === 200) {
 				setHistory([])
+				setToastMsg({ message: "History cleared", type: "success" })
 			}
 		} catch {
-			alert("Fail to clear history due to server error")
+			setToastMsg({ message: "Fail to clear history due to server error", type: "error" })
 		}
 	}
 
 	const updateSavedFavoriteCities = (newList: TFavoriteCityResponseObject[]) => {
 		setSavedFavoriteCities(newList);
+		setToastMsg({ message: "Updated favorite cities list", type: "success" })
 	}
 
 	return <>
