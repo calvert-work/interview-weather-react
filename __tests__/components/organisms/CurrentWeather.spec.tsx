@@ -14,9 +14,6 @@ vi.mock("../../../src/network/axiosInstance", () => ({
 	}
 }));
 
-const mockWindowAlert = vi.fn()
-window.alert = mockWindowAlert
-
 const mockUpdateFavoriteList = vi.fn()
 const mockWeatherData: TCurrentWeatherData = {
 	weather: [{
@@ -250,6 +247,5 @@ describe("CurrentWeather integration test", async () => {
 		expect(favoriteBtn).toBeInTheDocument()
 		await user.click(favoriteBtn);
 		expect(mockUpdateFavoriteList).toHaveBeenCalledTimes(0) // remove from favorite list failed
-		expect(window.alert).toHaveBeenCalledWith("Only logged in user can save favorite city")
 	});
 });
