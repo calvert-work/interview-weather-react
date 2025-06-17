@@ -1,4 +1,4 @@
-import { unixToLocalTime } from "../../src/util/unixToLocalTime"
+import { unixToLocalTime } from "../../src/utils/unixToLocalTime"
 
 describe("unix to local time unit test", () => {
 	test("matches expected format using a fixed locale", () => {

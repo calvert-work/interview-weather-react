@@ -5,7 +5,7 @@ import { Input } from "../../atoms/input/Input"
 import { useState } from "react"
 import { Label } from "../../atoms/label/Label"
 import { Button } from "../../atoms/button/Button"
-import { capitalize } from "../../../util/capitalize"
+import { capitalize } from "../../../utils/capitalize"
 
 const AuthPopup = ({
 	authType,

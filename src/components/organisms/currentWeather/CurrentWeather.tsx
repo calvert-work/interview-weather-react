@@ -6,11 +6,11 @@ import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import type { TCurrentWeather } from "./TCurrentWeather.types";
 import { Image } from "../../atoms/image/Image";
-import { unixToLocalTime } from "../../../util/unixToLocalTime";
-import { unixToLocalDate } from "../../../util/unixToLocalDate";
+import { unixToLocalTime } from "../../../utils/unixToLocalTime";
+import { unixToLocalDate } from "../../../utils/unixToLocalDate";
 import { axiosInstance } from "../../../network/axiosInstance";
 import type { AxiosError } from "axios";
-import { convertedTemp } from "../../../util/getTemperature";
+import { convertedTemp } from "../../../utils/getTemperature";
 import { useContext } from "react";
 import { AppContext } from "../../../context/AppContext";
 
@@ -61,7 +61,7 @@ export const CurrentWeather = (props: TCurrentWeather) => {
 	}
 
 	if (!weatherData) {
-		return <Text.Paragraph className={styles["noWeatherData"]}>No weather data</Text.Paragraph>
+		return <Card className={styles["currentWeatherCard"]}> <Text.Paragraph className={styles["noWeatherData"]}>No weather data</Text.Paragraph></Card >
 	}
 
 	return <Card className={styles["currentWeatherCard"]}>

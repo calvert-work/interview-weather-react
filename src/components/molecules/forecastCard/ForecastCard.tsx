@@ -1,5 +1,5 @@
-import { celsiusToFahrenheit } from "../../../util/celsiusToFahrenheit"
-import { unixToLocalDate } from "../../../util/unixToLocalDate"
+import { celsiusToFahrenheit } from "../../../utils/celsiusToFahrenheit"
+import { unixToLocalDate } from "../../../utils/unixToLocalDate"
 import { Card } from "../../atoms/card/Card"
 import { Image } from "../../atoms/image/Image"
 import { Text } from "../../atoms/text/Text"
