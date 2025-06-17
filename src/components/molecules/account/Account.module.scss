@@ -1,0 +1,74 @@
+@use "../../../styles/mixin.scss";
+
+.accountContainer {
+	@include mixin.flexbox($gap: 10px, $justifyContent: end);
+	position: relative;
+
+	&__link {
+		cursor: pointer;
+		padding-left: 10px;
+		padding-right: 10px;
+		padding-top: 5px;
+		padding-bottom: 5px;
+
+		&:hover {
+			outline: 1px solid black;
+		}
+	}
+}
+
+.greetingUser {
+	text-align: end;
+}
+
+.authBoxTitle {
+	text-align: center;
+	font-weight: 700;
+	font-size: 24px;
+}
+
+.authPopUpContainer {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.3); // backdrop
+	z-Index: 1000;
+}
+
+.authPopUp {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background: white;
+	padding: 24px;
+	border-radius: 8px;
+	box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
+	min-width: 30rem;
+}
+
+.authBtn {
+	width: 100%;
+	margin-bottom: 10px;
+}
+
+@media (max-width: 600px) {
+	.accountContainer {
+		@include mixin.flexbox($justifyContent: center, $gap: 10px);
+	}
+
+	.greetingUser {
+		text-align: center;
+	}
+
+	.authPopUpContainer {
+		width: 100%;
+	}
+
+	.authPopUp {
+		width: 90%;
+		min-width: auto;
+	}
+}

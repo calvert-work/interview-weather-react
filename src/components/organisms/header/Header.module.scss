@@ -1,0 +1,20 @@
+@use "../../../styles/mixin.scss";
+
+.appHeader {
+	@include mixin.flexbox($flexDirection: row, $justifyContent: space-between, $alignItems: center);
+}
+
+.headerLogo {
+	@include mixin.flexbox($flexDirection: row, $alignItems: center, $justifyContent: start, $gap: 10px);
+	width: 100%;
+}
+
+@media (max-width: 600px) {
+	.appHeader {
+		@include mixin.flexbox($justifyContent: center, $flexDirection: column, $gap: 10px);
+	}
+
+	.headerLogo {
+		@include mixin.flexbox($flexDirection: row, $justifyContent: center, $gap: 10px);
+	}
+}
