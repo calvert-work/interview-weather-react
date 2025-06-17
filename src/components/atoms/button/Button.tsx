@@ -9,6 +9,7 @@ export const Button = (props: TButton) => {
 		iconLeft,
 		variant = "primary",
 		className,
+		ariaLabel,
 		...rest
 	} = props
 
@@ -23,7 +24,7 @@ export const Button = (props: TButton) => {
 	)
 
 	return (
-		<button className={buttonClasses} type={type} {...rest}>
+		<button aria-label={ariaLabel} className={buttonClasses} type={type} {...rest}>
 			{
 				iconLeft &&
 				<span className={styles["btnLeftIcon"]}>{iconLeft}</span>

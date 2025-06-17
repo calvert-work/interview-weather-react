@@ -5,4 +5,6 @@ export type TButton = {
   children?: React.ReactNode;
 	iconLeft?: React.ReactNode;
   variant?: "primary" | "secondary" | "action" | "icon" | "border"
+  ariaLabel?: string
+  role?: string
 };
