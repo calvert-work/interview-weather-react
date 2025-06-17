@@ -1,4 +1,4 @@
-import { fahrenheitToCelsius } from "../../src/util/fahrenheitToCelsius"
+import { fahrenheitToCelsius } from "../../src/utils/fahrenheitToCelsius"
 
 describe("Celsius to Fahrenheit unit test", () => {
 	test("Fahrenheit to Celsius", () => {
