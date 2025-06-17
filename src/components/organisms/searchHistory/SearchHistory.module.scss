@@ -1,0 +1,20 @@
+@use "../../../styles/mixin.scss";
+
+.searchHistoryCard {
+	@include mixin.flexbox($justifyContent: space-between, $flexDirection: column);
+	flex: 1;
+	min-height: 20rem;
+}
+
+.searchHistoryTitle {
+	@include mixin.flexbox($justifyContent: start);
+}
+
+.pills {
+	@include mixin.flexbox($justifyContent: start, $gap: 5px);
+	flex-wrap: wrap;
+
+	&>button {
+		cursor: auto;
+	}
+}
