@@ -1,0 +1,67 @@
+@use "../../../styles/mixin.scss";
+
+.currentWeatherCard {
+	min-height: 10rem;
+}
+
+.temperature {
+	font-size: 24px;
+	font-weight: 500;
+}
+
+.titleArea {
+	@include mixin.flexbox($justifyContent: space-between);
+
+	&__location {
+		@include mixin.flexbox($justifyContent: start, $alignItems: center, $gap: 5px);
+
+		&__city {
+			font-size: 20px;
+			font-weight: 500;
+		}
+
+		&__country {
+			font-size: 14px;
+			font-weight: 500;
+		}
+	}
+}
+
+.noWeatherData {
+	text-align: center;
+}
+
+.contentArea {
+	@include mixin.flexbox($justifyContent: space-between, $alignItems: end);
+	padding-left: 20px;
+
+	&__leftDetailsContainer {
+		@include mixin.flexbox($justifyContent: start, $alignItems: center, $gap: 20px);
+		flex: 1;
+
+		&__details {
+			@include mixin.flexbox($justifyContent: start, $flexDirection: column, $alignItems: start);
+		}
+	}
+
+	&__rightDetailsContainer {
+		@include mixin.flexbox($justifyContent: start, $alignItems: end, $gap: 40px);
+		flex: 1;
+
+		&__details {
+			@include mixin.flexbox($justifyContent: start, $flexDirection: column, $alignItems: start);
+		}
+	}
+}
+
+@media (max-width: 600px) {
+	.contentArea {
+		@include mixin.flexbox($flexDirection: column, $alignItems: center, $gap: 15px);
+		padding-left: 0;
+
+		&__rightDetailsContainer {
+			@include mixin.flexbox($justifyContent: center, $alignItems: end, $gap: 40px);
+
+		}
+	}
+}
