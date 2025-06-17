@@ -7,7 +7,8 @@ export const setUserId = (id: string) => {
 };
 
 export const axiosInstance = axios.create({
-   baseURL: import.meta.env.VITE_SERVER_URL
+  baseURL: import.meta.env.VITE_SERVER_URL,
+  timeout: 120000 // 2 minutes in milliseconds
 });
 
 axiosInstance.interceptors.request.use((config) => {
