@@ -1,0 +1,15 @@
+@use "../../../styles/mixin.scss";
+
+.cardContainer {
+	@include mixin.flexbox($flexDirection: column, $alignItems: center);
+	padding-left: 2rem;
+	padding-right: 2rem;
+	flex: 1;
+}
+
+@media (max-width: 600px) {
+	.cardContainer {
+		width: 100%;
+		flex: auto;
+	}
+}
