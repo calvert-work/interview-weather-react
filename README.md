@@ -21,7 +21,8 @@ Mobile view
 
 ## Recording
 
-<video src="documentation/recording.mp4"></video>
+https://github.com/user-attachments/assets/5d835aab-532d-425a-ae66-837b4da33210
+
 
 ## Installation
 
