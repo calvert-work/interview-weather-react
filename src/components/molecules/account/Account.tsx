@@ -118,7 +118,7 @@ export const Account = ({ isLoggedIn = false, email, firstName, loginUser, regis
 					setUserFirstName={setUserFirstName}
 					setUserEmail={setUserEmail}
 					onCompleteAuthClick={onCompleteAuthClick}
-					onCancel={closeAuthPopup}
+					onCancel={() => closeAuthPopup(false)}
 					isLoading={isLoading}
 				/>
 			)}
