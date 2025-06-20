@@ -24,7 +24,9 @@ function App() {
   // this is a wake up call to wake up the backend and database due to the servers used are of free tier
   useEffect(() => {
     (async () => {
-      await axiosInstance.get("/api/weather/login/test@test.com")
+      await axiosInstance.post("/api/weather/login", {
+        email: "test@test.com"
+      })
     })()
   }, [])
 
