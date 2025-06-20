@@ -1,35 +1,189 @@
 import { useContext, useEffect, useState } from "react"
 import { Header } from "../../components/organisms/header/Header"
-import { SearchSection } from "../../components/organisms/searchSection/SearchSection"
-import { CurrentWeather } from "../../components/organisms/currentWeather/CurrentWeather"
-import { axiosInstance, setUserId } from "../../network/axiosInstance"
-import type { SuggestedLocation } from "../../types/SuggestedLocation.types"
 import { useDebounce } from "../../hooks/useDebounce"
-import type { AxiosError } from "axios"
-import { ForecastWeather } from "../../components/organisms/forecastWeather/ForecastWeather"
-import type { TForecastResponseObject } from "../../types/ForecastResponseObject.types"
-import type { TCurrentWeatherData } from "../../types/CurrentWeatherResponseObject.types"
-import { FavoriteCities } from "../../components/organisms/favoriteCities/FavoriteCities"
-import { SearchHistory } from "../../components/organisms/searchHistory/SearchHistory"
-import styles from "./WeatherDashboard.module.scss"
 import type { TFavoriteCityResponseObject } from "../../types/FavoriteCityResponseObject.types"
-import type { HistoryResponseObject } from "../../types/HistoryResponseObject.types"
+import { useRegisterService } from "../../services/auth/useRegisterService"
 import { AppContext } from "../../context/AppContext"
+import { useLoginService } from "../../services/auth/useLoginService"
+import { useGetFavoriteCities } from "../../services/favoriteCities/useGetFavoriteCities"
+import { useGetSearchHistoryService } from "../../services/history/useGetSearchHistoryService"
+import { setUserId, userId } from "../../network/axiosInstance"
+import styles from "./WeatherDashboard.module.scss"
+import { SearchHistory } from "../../components/organisms/searchHistory/SearchHistory"
+import { useClearSearchHistoryService } from "../../services/history/useClearSearchHistoryService"
+import { SearchSection } from "../../components/organisms/searchSection/SearchSection"
+import { useGetLocationSuggestions } from "../../services/useGetLocationSuggestions"
+import type { AxiosError } from "axios"
+import type { SuggestedLocation } from "../../types/SuggestedLocation.types"
+import { useGetCurrentWeatherService } from "../../services/weather/useGetCurrentWeatherService"
+import { CurrentWeather } from "../../components/organisms/currentWeather/CurrentWeather"
+import { ForecastWeather } from "../../components/organisms/forecastWeather/ForecastWeather"
+import { FavoriteCities } from "../../components/organisms/favoriteCities/FavoriteCities"
+import { updateCache } from "../../network/updateCache"
+import { useSaveFavoriteCity } from "../../services/favoriteCities/useSaveFavoriteCity"
+import { useDeleteFavoriteCity } from "../../services/favoriteCities/useDeleteFavoriteCity"
+import { useForecastWeatherService } from "../../services/weather/useForecastWeatherService"
+
 export const WeatherDashboard = () => {
 	const [isToggled, setIsToggled] = useState<boolean>(false)
-	const [searchedCity, setSearchedCity] = useState<{ city: string, source: "type" | "suggested" | "default" }>({ city: "", source: "default" })
-	const [suggestedCities, setSuggestedCities] = useState<string[]>([])
-	const [currentWeatherData, setCurrentWeatherData] = useState<TCurrentWeatherData | null>(null)
-	const [forecastWeatherData, setForecastWeatherData] = useState<TForecastResponseObject[]>([])
+	const [searchedCity, setSearchedCity] = useState<{ city: string, source: "user" | "suggested" | "default" }>({ city: "", source: "default" })
 	const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
 	const [userEmail, setUserEmail] = useState<string>('')
-	const [savedFavoriteCities, setSavedFavoriteCities] = useState<TFavoriteCityResponseObject[]>([])
-	const [history, setHistory] = useState<string[]>([])
+	const [userFirstName, setUserFirstName] = useState<string>('')
+	const [savedFavoriteCities, setSavedFavoriteCities] = useState<string[]>([])
 
 	const { setToastMsg } = useContext(AppContext);
 
-	const debouncedCity = useDebounce(searchedCity, 1000);
+	/**
+	 * Login api call
+	 */
+	const { mutateAsync: loginUserApiCall, isPending: loginPending } = useLoginService(
+		userEmail,
+		(userId) => {
+			setIsLoggedIn(true);
+			setUserId(userId)
+			setToastMsg({ message: `Welcome back, ${userEmail}`, type: "success" })
+		},
+		() => {
+			setIsLoggedIn(false);
+			setUserEmail("")
+			setUserFirstName("")
+			setToastMsg({ message: "Could be a bad email input, try again", type: "error" })
+		}
+	)
 
+	/**
+	 * Register api call
+	 */
+	const { mutateAsync: registerUserApiCall, isPending: registerPending } = useRegisterService(
+		userFirstName,
+		userEmail,
+		(userId) => {
+			setIsLoggedIn(true);
+			setUserId(userId)
+			setToastMsg({ message: `Welcome, ${userEmail}`, type: "success" })
+		},
+		() => {
+			setIsLoggedIn(false);
+			setUserEmail("")
+			setUserFirstName("")
+			setToastMsg({ message: "Could be a bad user input, try again", type: "error" })
+		}
+	)
+
+	/**
+	 * retrieve favorite cities when user id is available
+	 */
+	const { data: favoriteCitiesData } = useGetFavoriteCities(userId)
+	useEffect(() => {
+		// return favorite cities in string array
+		const cities = favoriteCitiesData?.map((item: TFavoriteCityResponseObject) => `${item.city_name}, ${item.country_code}`)
+
+		setSavedFavoriteCities(cities ?? [])
+	}, [favoriteCitiesData])
+
+	/**
+	 * retrieve search history when user id is available
+	 */
+	const { data: searchHistoryData } = useGetSearchHistoryService(userId)
+
+	/**
+	 * Clear all search history
+	 */
+	const { mutateAsync: clearHistoryApiCall } = useClearSearchHistoryService(
+		() => {
+			setToastMsg({ message: "History cleared", type: "success" })
+		},
+		() => {
+			setToastMsg({ message: "Failed to clear history, server error", type: "error" })
+		},
+	)
+
+	/**
+	 * Get location suggestions at the search bar area
+	 */
+	const debouncedCity = useDebounce(searchedCity, 1000);
+	const { data: suggestions } = useGetLocationSuggestions(debouncedCity.city, debouncedCity.source)
+	const suggestedCities = suggestions?.map(
+		(item: SuggestedLocation) => `${item.name}, ${item.state}, ${item.country}`
+	);
+
+	useEffect(() => {
+		if (suggestions?.length === 0) {
+			setToastMsg({ message: "Invalid city, try again", type: "error" })
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [suggestions])
+
+	/**
+	 * Get current weather of the city
+	 */
+	const { data: currentWeatherData, refetch: getCurrentWeatherRefetch, isFetching: getCurrentWeatherFetching, } = useGetCurrentWeatherService(searchedCity.city)
+	useEffect(() => {
+		if (isLoggedIn) {
+			const locationStringArray = searchedCity.city.split(",");
+			const newHistoryEntry = `${locationStringArray[0]}, ${locationStringArray[2] || locationStringArray[1]}`;
+
+			(async () => {
+				await updateCache(["getSearchHistory", userId], (oldHistory: string[] | undefined) => {
+					return oldHistory?.includes(newHistoryEntry) ? oldHistory : [...(oldHistory ?? []), newHistoryEntry]
+				})
+			})()
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [currentWeatherData])
+
+	/**
+	 * Save city to favorite only if user id is available
+	 * Calls delete favorite city if the city is already favorited
+	 */
+	const { mutateAsync: saveFavoriteCityApiCall } = useSaveFavoriteCity(
+		currentWeatherData?.name,
+		currentWeatherData?.sys.country,
+		async (newFavoriteCity: TFavoriteCityResponseObject) => {
+			await updateCache(["getFavoriteCities", userId], (oldFavorite: TFavoriteCityResponseObject[] | undefined) => [...(oldFavorite ?? []), newFavoriteCity])
+		},
+		async (statusCode: number) => {
+			if (statusCode === 409) {
+				const deleteId = favoriteCitiesData?.find(city => city.city_name.toLowerCase() === currentWeatherData?.name.toLowerCase())?.id
+
+				if (deleteId) {
+					await deleteFavoriteCityApiCall(deleteId)
+				}
+			} else if (statusCode === 400) {
+				setToastMsg({ message: "Only logged in user can save favorite city", type: "error" })
+			} else {
+				setToastMsg({ message: `Failed to add ${currentWeatherData?.name} to the favorite list, server error`, type: "error" })
+			}
+		}
+	)
+
+	const { data: forecastWeatherData, refetch: getForecastWeatherRefetch, isFetching: forecastWeatherFetching } = useForecastWeatherService(searchedCity.city)
+
+	/**
+	 * Add city to favorite
+	 */
+	const saveFavoriteCity = async () => {
+		await saveFavoriteCityApiCall()
+	}
+
+	/**
+	 * Delete favorite city
+	 */
+	const { mutateAsync: deleteFavoriteCityApiCall } = useDeleteFavoriteCity(
+		async (deleteId: string) => {
+			await updateCache(["getFavoriteCities", userId], (oldFavorite: TFavoriteCityResponseObject[] | undefined) => { return oldFavorite?.filter(city => city.id !== deleteId) ?? [] })
+
+			setToastMsg({ message: `Removed ${searchedCity.city} from favorite list`, type: "success" })
+		},
+		async () => {
+			setToastMsg({ message: `Failed to removed ${searchedCity.city} from favorite list`, type: "error" })
+		}
+	)
+
+	/**
+	 * Toggle temperature unit switch to change temperature unit
+	 */
 	const toggleTemperatureUnit = () => {
 		setIsToggled(!isToggled)
 	}
@@ -37,160 +191,39 @@ export const WeatherDashboard = () => {
 	const cityInputChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
 		const searched = event.target.value;
 
-		setSearchedCity({ city: searched, source: "type" });
+		setSearchedCity({ city: searched, source: "user" });
 	}
-
-	useEffect(() => {
-		if (!debouncedCity.city) {
-			setSuggestedCities([]);
-			return;
-		}
-
-		const fetchSuggestions = async () => {
-			try {
-				const res = await axiosInstance.get(`/api/location/suggestion/${debouncedCity.city}`);
-				if (res.status === 200 && res.data.length > 0) {
-					const cities = res.data.map(
-						(item: SuggestedLocation) => `${item.name}, ${item.state}, ${item.country}`
-					);
-					setSuggestedCities(cities);
-				} else {
-					setToastMsg({ message: "Invalid city or country", type: "info" })
-					setSuggestedCities([]);
-				}
-			} catch (error) {
-				if ((error as AxiosError).status === 404) {
-					setToastMsg({ message: "Invalid city or country", type: "info" })
-				}
-				setSuggestedCities([]);
-			}
-
-			setToastMsg(undefined)
-		};
-
-		if (debouncedCity.source === "type") {
-			setToastMsg({ message: "Server could be sleeping, give it one min to wake up", type: "info", duration: 120000 })
-
-			fetchSuggestions();
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [debouncedCity]);
 
 	const suggestedCityClick = (city: string) => {
 		setSearchedCity({ city, source: "suggested" });
-		setSuggestedCities([]);
 	}
 
-	const searchWeather = async () => {
-		if (suggestedCities.length === 0 && searchedCity.source === "suggested") {
+	const searchWeather = () => {
+		if (searchedCity.source === "suggested") {
 			try {
-				const weatherResponse = await axiosInstance.get(`/api/weather/current/${searchedCity.city}`);
-
-				const forecastResponse = await axiosInstance.get(`/api/weather/forecast/${searchedCity.city}`);
-
-				const forecastOfNoonOnly = forecastResponse.data.data.list.filter((item: TForecastResponseObject) => item.dt_txt.includes("00:00:00"))
-
-				setCurrentWeatherData(weatherResponse.data.data)
-				setForecastWeatherData(forecastOfNoonOnly)
-
-				if (isLoggedIn && weatherResponse.data.historyStored === true) {
-					const locationStringArray = searchedCity.city.split(",");
-					const finalString = `${locationStringArray[0]}, ${locationStringArray[2] || locationStringArray[1]}`
-
-					setHistory([...history, finalString])
-				}
+				getCurrentWeatherRefetch()
+				getForecastWeatherRefetch()
 			} catch (error) {
 				if ((error as AxiosError).status === 404) {
 					setToastMsg({ message: "Invalid city or country", type: "error" })
 				}
-				setSuggestedCities([]);
 			}
 		} else {
 			setToastMsg({ message: "Select an option from the search dropdown to proceed", type: "info" })
 		}
 	}
 
-	const registerUser = async (firstName: string, email: string) => {
-		try {
-			const registerResponse = await axiosInstance.post("/api/weather/user", {
-				firstName,
-				email
-			})
-
-			if (registerResponse.status === 201) {
-				setUserEmail(email)
-				setToastMsg({ message: "Registration successful, go ahead and login", type: "success" })
-			}
-		} catch {
-			setToastMsg({ message: "Are you entering your details correctly? Try registering again", type: "error" })
-		}
+	const loginUser = async () => {
+		await loginUserApiCall()
 	}
 
-	const loginUser = async (email: string) => {
-		try {
-			const registerResponse = await axiosInstance.get(`/api/weather/user/${email}`)
-
-			if (registerResponse.status === 200) {
-				const userId = registerResponse.data.data.id
-				setToastMsg({ message: "Login success", type: "success" })
-
-				setUserEmail(email)
-				setIsLoggedIn(true)
-				setUserId(userId)
-
-				getFavoriteCities(userId)
-				getHistory()
-			}
-		} catch {
-			setToastMsg({ message: "User does not exist, register yourself now", type: "error" })
-		}
-	}
-
-	const getFavoriteCities = async (userId: string) => {
-		try {
-			const getFavoriteCitiesResponse = await axiosInstance.get(`/api/weather/favorites`, {
-				params: {
-					userId
-				}
-			})
-
-			if (getFavoriteCitiesResponse.status === 200) {
-				setSavedFavoriteCities(getFavoriteCitiesResponse.data.data)
-			}
-		} catch {
-			setSavedFavoriteCities([])
-		}
-	}
-
-	const getHistory = async () => {
-		try {
-			const getHistoryResponse = await axiosInstance.get("/api/weather/history")
-
-			if (getHistoryResponse.status === 200) {
-				const cities = getHistoryResponse.data.data.map((item: HistoryResponseObject) => `${item.city_name}, ${item.country_code}`);
-				setHistory(cities)
-			}
-		} catch {
-			setHistory([])
-		}
+	const registerUser = async () => {
+		await registerUserApiCall()
 	}
 
 	const clearHistory = async () => {
-		try {
-			const clearHistoryResponse = await axiosInstance.delete("/api/weather/history");
-
-			if (clearHistoryResponse.status === 200) {
-				setHistory([])
-				setToastMsg({ message: "History cleared", type: "success" })
-			}
-		} catch {
-			setToastMsg({ message: "Fail to clear history due to server error", type: "error" })
-		}
-	}
-
-	const updateSavedFavoriteCities = (newList: TFavoriteCityResponseObject[]) => {
-		setSavedFavoriteCities(newList);
-		setToastMsg({ message: "Updated favorite cities list", type: "success" })
+		await clearHistoryApiCall()
+		await updateCache(["getSearchHistory", userId], [])
 	}
 
 	return <>
@@ -199,13 +232,17 @@ export const WeatherDashboard = () => {
 			registerUser={registerUser}
 			loginUser={loginUser}
 			email={userEmail}
+			firstName={userFirstName}
+			setUserEmail={setUserEmail}
+			setUserFirstName={setUserFirstName}
+			isLoading={loginPending || registerPending}
 		/>
 
 		<SearchSection
 			onChange={cityInputChange}
 			value={searchedCity?.city}
 			onClick={searchWeather}
-			suggestedCities={suggestedCities}
+			suggestedCities={suggestedCities as string[] ?? []}
 			onSuggestedCityClick={suggestedCityClick}
 			isToggled={isToggled}
 			onToggle={toggleTemperatureUnit}
@@ -213,17 +250,23 @@ export const WeatherDashboard = () => {
 
 		<br />
 
-		<CurrentWeather updateSavedFavoriteCities={updateSavedFavoriteCities} favoriteCities={savedFavoriteCities} weatherData={currentWeatherData} temperatureUnit={isToggled ? "f" : "c"} />
+		<CurrentWeather
+			isLoading={getCurrentWeatherFetching}
+			saveFavoriteCity={saveFavoriteCity}
+			favoriteCities={favoriteCitiesData ?? []}
+			weatherData={currentWeatherData}
+			temperatureUnit={isToggled ? "f" : "c"}
+		/>
 
 		<br />
 
-		<ForecastWeather forecastData={forecastWeatherData} temperatureUnit={isToggled ? "f" : "c"} />
+		<ForecastWeather isLoading={forecastWeatherFetching} forecastData={forecastWeatherData ?? []} temperatureUnit={isToggled ? "f" : "c"} />
 
 		<br />
 
 		<section className={styles["favoriteAndHistoryContainer"]}>
-			<FavoriteCities favoriteCities={savedFavoriteCities} />
-			<SearchHistory history={history} clearHistory={clearHistory} />
+			<FavoriteCities favoriteCities={savedFavoriteCities ?? []} />
+			<SearchHistory history={searchHistoryData ?? []} clearHistory={clearHistory} />
 		</section>
 	</>
 }

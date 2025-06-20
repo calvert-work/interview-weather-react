@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-let userId: string | null = null;
+export let userId: string | null = null;
 
 export const setUserId = (id: string) => {
   userId = id;

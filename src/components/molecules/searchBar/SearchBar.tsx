@@ -11,7 +11,7 @@ export const SearchBar = ({ htmlFor, label, onClick, suggestedCities, onSuggeste
 				{label}
 
 				<div className={styles["searchBarContainer__listContainer"]}>
-					<Input id={htmlFor} {...rest} />
+					<Input autoFocus id={htmlFor} {...rest} />
 
 					{suggestedCities.length > 0 && (
 						<ul

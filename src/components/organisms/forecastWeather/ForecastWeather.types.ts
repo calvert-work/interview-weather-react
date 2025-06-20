@@ -2,5 +2,6 @@ import type { TForecastResponseObject } from "../../../types/ForecastResponseObj
 
 export type TForecastWeather = {
 	forecastData: TForecastResponseObject[],
-	temperatureUnit: "c" | "f"
+	temperatureUnit: "c" | "f",
+	isLoading: boolean
 }

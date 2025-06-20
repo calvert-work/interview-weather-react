@@ -2,8 +2,9 @@ import type { TCurrentWeatherData } from "../../../types/CurrentWeatherResponseO
 import type { TFavoriteCityResponseObject } from "../../../types/FavoriteCityResponseObject.types"
 
 export type TCurrentWeather = {
-	weatherData: TCurrentWeatherData | null
+	weatherData?: TCurrentWeatherData
 	temperatureUnit: "c" | "f"
 	favoriteCities: TFavoriteCityResponseObject[]
-	updateSavedFavoriteCities: (newList: TFavoriteCityResponseObject[]) => void
+	saveFavoriteCity: () => void
+	isLoading: boolean
 }

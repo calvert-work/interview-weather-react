@@ -8,21 +8,17 @@ import type { TCurrentWeather } from "./TCurrentWeather.types";
 import { Image } from "../../atoms/image/Image";
 import { unixToLocalTime } from "../../../utils/unixToLocalTime";
 import { unixToLocalDate } from "../../../utils/unixToLocalDate";
-import { axiosInstance } from "../../../network/axiosInstance";
-import type { AxiosError } from "axios";
-import { convertedTemp } from "../../../utils/getTemperature";
-import { useContext } from "react";
-import { AppContext } from "../../../context/AppContext";
+import { convertedTemp } from "../../../utils/convertTemp";
+import CircularProgress from "@mui/material/CircularProgress"
 
 export const CurrentWeather = (props: TCurrentWeather) => {
 	const {
 		weatherData,
 		temperatureUnit = "c",
 		favoriteCities,
-		updateSavedFavoriteCities
+		saveFavoriteCity,
+		isLoading = false
 	} = props
-
-	const { setToastMsg } = useContext(AppContext);
 
 	const cityName = weatherData?.name ?? "N/A";
 	const cityNameLowerCased = weatherData?.name.toLowerCase() ?? "N/A";
@@ -31,37 +27,18 @@ export const CurrentWeather = (props: TCurrentWeather) => {
 
 	const mainTemp = weatherData?.main.temp
 
-	const isFavoriteCity = favoriteCities.find(city => city.city_name.toLowerCase() === cityNameLowerCased)
+	const isFavoriteCity = favoriteCities?.find(city => city.city_name.toLowerCase() === cityNameLowerCased)
 
 	const favoriteClick = async () => {
-		try {
-			const response = await axiosInstance.post("/api/weather/favorites", {
-				city: cityName,
-				countryCode: countryCode
-			})
+		saveFavoriteCity()
+	}
 
-			if (response.status === 201) {
-				updateSavedFavoriteCities([...favoriteCities, response.data.data])
-			}
-		} catch (error) {
-			if ((error as AxiosError).status === 409) {
-				const foundId = favoriteCities.find(city => city.city_name.toLowerCase() === cityNameLowerCased)?.id
-
-				if (foundId) {
-					const response = await axiosInstance.delete(`/api/weather/favorites/${foundId}`)
-
-					if (response.status === 200) {
-						updateSavedFavoriteCities(favoriteCities.filter(city => city.city_name.toLowerCase() !== cityNameLowerCased))
-					}
-				}
-			} else {
-				setToastMsg({ message: "Only logged in user can save favorite city", type: "error" })
-			}
-		}
+	if (isLoading) {
+		return <Card className={styles["currentWeatherCard"]}><CircularProgress /></Card>
 	}
 
 	if (!weatherData) {
-		return <Card className={styles["currentWeatherCard"]}> <Text.Paragraph className={styles["noWeatherData"]}>No weather data</Text.Paragraph></Card >
+		return <Card className={styles["currentWeatherCard"]}><Text.Paragraph className={styles["noWeatherData"]}>No weather data</Text.Paragraph></Card >
 	}
 
 	return <Card className={styles["currentWeatherCard"]}>

@@ -14,7 +14,7 @@ vi.mock("../../../src/network/axiosInstance", () => ({
 	}
 }));
 
-const mockUpdateFavoriteList = vi.fn()
+const mockSaveFavoriteCity = vi.fn()
 const mockWeatherData: TCurrentWeatherData = {
 	weather: [{
 		main: "Clear",
@@ -57,10 +57,11 @@ describe("CurrentWeather integration test", async () => {
 	test("render current weather section with no data", async () => {
 		render(
 			<CurrentWeather
-				weatherData={null}
+				weatherData={undefined}
 				temperatureUnit={"c"}
 				favoriteCities={[]}
-				updateSavedFavoriteCities={mockUpdateFavoriteList}
+				saveFavoriteCity={mockSaveFavoriteCity}
+				isLoading={false}
 			/>
 		)
 
@@ -82,7 +83,8 @@ describe("CurrentWeather integration test", async () => {
 				weatherData={mockWeatherData}
 				temperatureUnit={"c"}
 				favoriteCities={[]}
-				updateSavedFavoriteCities={mockUpdateFavoriteList}
+				saveFavoriteCity={mockSaveFavoriteCity}
+				isLoading={false}
 			/>
 		)
 
@@ -93,7 +95,7 @@ describe("CurrentWeather integration test", async () => {
 		const favoriteBtn = screen.getByRole('button', { name: /click button to add las vegas to the favorite list/i })
 		expect(favoriteBtn).toBeInTheDocument()
 		await user.click(favoriteBtn);
-		expect(mockUpdateFavoriteList).toHaveBeenCalledTimes(1) // store las vegas to favorite successfully
+		expect(mockSaveFavoriteCity).toHaveBeenCalledTimes(1) // store las vegas to favorite successfully
 
 		expect(screen.getByRole('figure')).toBeInTheDocument()
 		expect(screen.getByText(/10°c/i)).toBeInTheDocument()
@@ -112,7 +114,8 @@ describe("CurrentWeather integration test", async () => {
 				weatherData={mockWeatherData}
 				temperatureUnit={"f"}
 				favoriteCities={[]}
-				updateSavedFavoriteCities={mockUpdateFavoriteList}
+				saveFavoriteCity={mockSaveFavoriteCity}
+				isLoading={false}
 			/>
 		)
 
@@ -135,7 +138,8 @@ describe("CurrentWeather integration test", async () => {
 				weatherData={mockWeatherData}
 				temperatureUnit={"c"}
 				favoriteCities={[]}
-				updateSavedFavoriteCities={mockUpdateFavoriteList}
+				saveFavoriteCity={mockSaveFavoriteCity}
+				isLoading={false}
 			/>
 		)
 
@@ -143,7 +147,7 @@ describe("CurrentWeather integration test", async () => {
 		const favoriteBtn = screen.getByRole('button', { name: /click button to add las vegas to the favorite list/i })
 		expect(favoriteBtn).toBeInTheDocument()
 		await user.click(favoriteBtn);
-		expect(mockUpdateFavoriteList).toHaveBeenCalledTimes(0) // nothing happen because backend won't return 200
+		expect(mockSaveFavoriteCity).toHaveBeenCalledTimes(1)
 	});
 
 	test("render current weather section with a city current weather, it is a favorite city and city is removed from favorite", async () => {
@@ -162,7 +166,8 @@ describe("CurrentWeather integration test", async () => {
 				weatherData={mockWeatherData}
 				temperatureUnit={"c"}
 				favoriteCities={mockFavoriteCities}
-				updateSavedFavoriteCities={mockUpdateFavoriteList}
+				saveFavoriteCity={mockSaveFavoriteCity}
+				isLoading={false}
 			/>
 		)
 
@@ -170,7 +175,7 @@ describe("CurrentWeather integration test", async () => {
 		const favoriteBtn = screen.getByRole('button', { name: /click button to remove las vegas from the favorite list/i })
 		expect(favoriteBtn).toBeInTheDocument()
 		await user.click(favoriteBtn);
-		expect(mockUpdateFavoriteList).toHaveBeenCalledTimes(1) // remove from favorite list successfully
+		expect(mockSaveFavoriteCity).toHaveBeenCalledTimes(1) // remove from favorite list successfully
 	});
 
 	test("render current weather section with a city current weather, it is a favorite city and failed to be removed from favorite. Favorite city id not found edge case which will not happen", async () => {
@@ -185,14 +190,15 @@ describe("CurrentWeather integration test", async () => {
 				weatherData={mockWeatherData}
 				temperatureUnit={"c"}
 				favoriteCities={falseMockFavoriteCities}
-				updateSavedFavoriteCities={mockUpdateFavoriteList}
+				saveFavoriteCity={mockSaveFavoriteCity}
+				isLoading={false}
 			/>
 		)
 
 		const favoriteBtn = screen.getByRole('button', { name: /click button to add las vegas to the favorite list/i })
 		expect(favoriteBtn).toBeInTheDocument()
 		await user.click(favoriteBtn);
-		expect(mockUpdateFavoriteList).toHaveBeenCalledTimes(0) 
+		expect(mockSaveFavoriteCity).toHaveBeenCalledTimes(1)
 	});
 
 	test("render current weather section with a city current weather, it is a favorite city but failed to be removed from the favorite list due to delete operation failure", async () => {
@@ -211,7 +217,8 @@ describe("CurrentWeather integration test", async () => {
 				weatherData={mockWeatherData}
 				temperatureUnit={"c"}
 				favoriteCities={mockFavoriteCities}
-				updateSavedFavoriteCities={mockUpdateFavoriteList}
+				saveFavoriteCity={mockSaveFavoriteCity}
+				isLoading={false}
 			/>
 		)
 
@@ -219,7 +226,7 @@ describe("CurrentWeather integration test", async () => {
 		const favoriteBtn = screen.getByRole('button', { name: /click button to remove las vegas from the favorite list/i })
 		expect(favoriteBtn).toBeInTheDocument()
 		await user.click(favoriteBtn);
-		expect(mockUpdateFavoriteList).toHaveBeenCalledTimes(0) // remove from favorite list successfully
+		expect(mockSaveFavoriteCity).toHaveBeenCalledTimes(1)
 	});
 
 	test("render current weather section with a city current weather, it is a favorite city but failed to be removed from the favorite list due to server error", async () => {
@@ -238,7 +245,8 @@ describe("CurrentWeather integration test", async () => {
 				weatherData={mockWeatherData}
 				temperatureUnit={"c"}
 				favoriteCities={mockFavoriteCities}
-				updateSavedFavoriteCities={mockUpdateFavoriteList}
+				saveFavoriteCity={mockSaveFavoriteCity}
+				isLoading={false}
 			/>
 		)
 
@@ -246,6 +254,6 @@ describe("CurrentWeather integration test", async () => {
 		const favoriteBtn = screen.getByRole('button', { name: /click button to remove las vegas from the favorite list/i })
 		expect(favoriteBtn).toBeInTheDocument()
 		await user.click(favoriteBtn);
-		expect(mockUpdateFavoriteList).toHaveBeenCalledTimes(0) // remove from favorite list failed
+		expect(mockSaveFavoriteCity).toHaveBeenCalledTimes(1)
 	});
 });

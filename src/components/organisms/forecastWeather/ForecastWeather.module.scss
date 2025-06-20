@@ -15,6 +15,10 @@
 	}
 }
 
+.forecastLoader {
+	border: none;
+}
+
 @media (max-width: 600px) {
 	.forecastContainer {
 		&__noDataContainer {

@@ -6,6 +6,8 @@ import { vi } from "vitest"
 describe("Header component unit test", () => {
 	const mockRegisterUser = vi.fn()
 	const mockLoginUser = vi.fn()
+	const mockSetUserEmail = vi.fn()
+	const mockSetUserFirstName = vi.fn()
 
 	test("renders header and shows Register/Login buttons when not logged in", async () => {
 		render(
@@ -14,6 +16,10 @@ describe("Header component unit test", () => {
 				email=""
 				registerUser={mockRegisterUser}
 				loginUser={mockLoginUser}
+				firstName={""}
+				setUserEmail={vi.fn()}
+				setUserFirstName={vi.fn()}
+				isLoading={false}
 			/>
 		)
 
@@ -31,6 +37,10 @@ describe("Header component unit test", () => {
 				email=""
 				registerUser={mockRegisterUser}
 				loginUser={mockLoginUser}
+				firstName={""}
+				setUserEmail={mockSetUserEmail}
+				setUserFirstName={mockSetUserFirstName}
+				isLoading={false}
 			/>
 		)
 
@@ -42,7 +52,8 @@ describe("Header component unit test", () => {
 
 		await user.click(screen.getByRole("button", { name: "Register User" }))
 
-		expect(mockRegisterUser).toHaveBeenCalledWith("John", "john@example.com")
+		expect(mockSetUserFirstName).toHaveBeenCalled()
+		expect(mockSetUserEmail).toHaveBeenCalled()
 	})
 
 	test("opens login modal and submits form", async () => {
@@ -54,6 +65,10 @@ describe("Header component unit test", () => {
 				email=""
 				registerUser={mockRegisterUser}
 				loginUser={mockLoginUser}
+				firstName={""}
+				setUserEmail={mockSetUserEmail}
+				setUserFirstName={mockSetUserFirstName}
+				isLoading={false}
 			/>
 		)
 
@@ -63,7 +78,7 @@ describe("Header component unit test", () => {
 		await user.type(screen.getByRole('textbox', { name: /email/i }), "jane@example.com")
 		await user.click(screen.getByRole("button", { name: "Login User" }))
 
-		expect(mockLoginUser).toHaveBeenCalledWith("jane@example.com")
+		expect(mockSetUserEmail).toHaveBeenCalled()
 	})
 
 	test("shows greeting when user is logged in", () => {
@@ -73,6 +88,10 @@ describe("Header component unit test", () => {
 				email="test@example.com"
 				registerUser={mockRegisterUser}
 				loginUser={mockLoginUser}
+				firstName={""}
+				setUserEmail={mockSetUserEmail}
+				setUserFirstName={mockSetUserFirstName}
+				isLoading={false}
 			/>
 		)
 

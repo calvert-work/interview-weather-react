@@ -2,9 +2,14 @@
 
 .cardContainer {
 	@include mixin.flexbox($flexDirection: column, $alignItems: center);
-	padding-left: 2rem;
-	padding-right: 2rem;
+	padding-left: 1.5rem;
+	padding-right: 1.5rem;
 	flex: 1;
+	align-self: stretch;
+}
+
+.forecastDate {
+	text-align: center;
 }
 
 @media (max-width: 600px) {

@@ -3,4 +3,6 @@ export type TInput = {
 	className?: string
 	onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
 	value: string
+	disabled?: boolean
+	autoFocus?: boolean
 }
