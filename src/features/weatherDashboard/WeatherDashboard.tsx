@@ -48,7 +48,7 @@ export const WeatherDashboard = () => {
 			setIsLoggedIn(false);
 			setUserEmail("")
 			setUserFirstName("")
-			setToastMsg({ message: "Could be a bad email input, try again", type: "error" })
+			setToastMsg({ message: "Login failed, try again", type: "error" })
 		}
 	)
 
@@ -118,7 +118,7 @@ export const WeatherDashboard = () => {
 	/**
 	 * Get current weather of the city
 	 */
-	const { data: currentWeatherData, refetch: getCurrentWeatherRefetch, isFetching: getCurrentWeatherFetching, } = useGetCurrentWeatherService(searchedCity.city)
+	const { data: currentWeatherData, refetch: getCurrentWeatherRefetch, isFetching: getCurrentWeatherFetching, } = useGetCurrentWeatherService(searchedCity.city, userId)
 	useEffect(() => {
 		if (isLoggedIn) {
 			const locationStringArray = searchedCity.city.split(",");

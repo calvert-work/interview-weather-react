@@ -8,9 +8,9 @@ const networkCall = async (city: string): Promise<TCurrentWeatherData> => {
 	return data.data as TCurrentWeatherData
 }
 
-export const useGetCurrentWeatherService = (city: string) => {
+export const useGetCurrentWeatherService = (city: string, userId: string | null) => {
 	return useGet<TCurrentWeatherData>({
-		queryKey: ["getCurrentWeather", city],
+		queryKey: ["getCurrentWeather", city, userId],
 		queryFn: () => networkCall(city),
 		enabled: false,
 		keepPrevData: true

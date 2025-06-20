@@ -76,8 +76,13 @@ export const Account = ({ isLoggedIn = false, email, firstName, loginUser, regis
 		setAuthType(type);
 	};
 
-	const closeAuthPopup = () => {
+	const closeAuthPopup = (isLoggedIn?: boolean) => {
 		setShowCredsBox(false);
+
+		if(!isLoggedIn) {
+			setUserEmail("")
+			setUserFirstName("")
+		}
 	};
 
 	const onCompleteAuthClick = async () => {
@@ -90,7 +95,7 @@ export const Account = ({ isLoggedIn = false, email, firstName, loginUser, regis
 
 	useEffect(() => {
 		if (isLoggedIn) {
-			closeAuthPopup();
+			closeAuthPopup(isLoggedIn);
 		}
 	}, [isLoggedIn])
 
