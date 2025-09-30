@@ -99,12 +99,8 @@ Followed atomic architecture to build UI elements (cons mentioned below)
 
 1. Atomic architecture is good for ensuring component code are reuseable and small but it is very time-consuming. Building each component takes a very long time because the amount of code and tests is huge. It is recommended to use a third party library for quicker development especially for an interview take-home assessment. In a larger organization, most of them have their own UI library hence the feature codebase should be a bit cleaner.
 2. Have a repository folder so that api code can go here which reduces the amount of code residing in the feature code.
-3. Implement Tanstack Query so that api calls are cached hence not hitting the server that much.
-4. Better error handling, some rare cases are not being handled
-5. Logging with Datadog
-6. Structure the component style code better with scss
-7. Refactor some files that have somewhat complex logic
-8. Setting up infrastructure took a bit of time
+3. Better error handling, some rare cases are not being handled
+4. Logging with Datadog
 
 ## Lighthouse score
 
